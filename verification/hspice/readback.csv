@@ -1,0 +1,13 @@
+block,view,node,time_ns,expected_bit,sample_v,result
+ram8t_cell,postlayout,RBL,7.5,1,0.8008646,PASS
+ram8t_cell,postlayout,RBL,17.5,0,0.0000405118,PASS
+ram8t_cell,schematic,RBL,7.5,1,0.7964659,PASS
+ram8t_cell,schematic,RBL,17.5,0,0.0000418461,PASS
+ram8t_full,postlayout,DOUT0,7.5,1,1.1999,PASS
+ram8t_full,postlayout,DOUT1,7.5,0,0.0000283190,PASS
+ram8t_full,postlayout,DOUT0,17.5,0,0.0000280954,PASS
+ram8t_full,postlayout,DOUT1,17.5,1,1.1999,PASS
+ram8t_full,schematic,DOUT0,7.5,1,1.2000,PASS
+ram8t_full,schematic,DOUT1,7.5,0,0.0000284230,PASS
+ram8t_full,schematic,DOUT0,17.5,0,0.0000296103,PASS
+ram8t_full,schematic,DOUT1,17.5,1,1.2000,PASS

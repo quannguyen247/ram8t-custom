@@ -1,0 +1,52 @@
++------------------------------------------------------------------------+
+|                      Hercules LVS Comparison Report                    |
++------------------------------------------------------------------------+
+
+COMPARE (R) Hierarchical Layout Vs. Schematic
+	AMD.64 Release B-2008.09.SP5.26002 2012/07/10
+Copyright (C) Synopsys, Inc. All rights reserved.
+
+
+--------------------------------------------------------------------------
+LVS error file     = ram8t_array2x2.LVS_ERRORS
+Layout error file  = ram8t_array2x2.LAYOUT_ERRORS
+Schematic netlist  = ram8t_array2x2.sch_out
+Layout netlist     = ram8t_array2x2.net
+Equivalence file   = [automatic]
+Runset file        = ram8t_array2x2.hercules.lvs/reference_lvs.lvs.evx
+Working directory  = ram8t_array2x2.hercules.lvs
+Compare directory  = run_details/compare
+Compare start time = 2026-11-20 21:02:03
+
+
++------------------------------------------------------------------------+
+|                              Layout Errors                             |
++------------------------------------------------------------------------+
+
+ERROR: The following errors are listed in "ram8t_array2x2.LAYOUT_ERRORS":
+
+    ERR_TEXT_OPEN (1)
+
+
+--------------------------------------------------------------------------
+Top block compare result: PASS
+
+			#####   ##   ##### #####
+			#   #  #  #  #     #
+			##### ###### ##### #####
+			#     #    #     #     #
+			#     #    # ##### #####
+
+
+                    [ram8t_array2x2 == ram8t_array2x2]
+
+--------------------------------------------------------------------------
+Comparison summary
+
+    2 successful equivalencies
+    0 failed equivalencies
+
+Schematic and layout agree at all equivalent points.
+
+
+End of LVS comparison report

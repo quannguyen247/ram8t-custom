@@ -1,0 +1,6 @@
+$DATA1 SOURCE='HSPICE' VERSION='N-2017.12-SP2 linux64' PARAM_COUNT=0
+.TITLE '* generated for: hspice'
+ hold_snm_mv      read_snm_mv      write_snm_mv     temper
+ alter#
+  307.1972         307.1993         435.0004          25.0000
+1

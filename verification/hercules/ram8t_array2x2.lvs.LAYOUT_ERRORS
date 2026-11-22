@@ -1,0 +1,27 @@
+		     LAYOUT ERRORS RESULTS: ERRORS
+
+		  ##### ####  ####   ###  ####   ####
+		  #     #   # #   # #   # #   # #
+		  ####  ####  ####  #   # ####   ###
+		  #     #  #  #  #  #   # #  #      #
+		  ##### #   # #   #  ###  #   # ####
+
+===========================================================================
+
+Library name:  ram8t_custom
+Structure name:  ram8t_array2x2
+
+			ERROR SUMMARY
+
+No Comment
+ ERR_TEXT_OPEN .......................................... 1 violation found.
+
+
+
+			ERROR DETAILS
+
+
+
+#####--- ERR_TEXT_OPEN -----------------------------------
+
+Nets in named structures are connected by text.
