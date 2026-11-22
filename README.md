@@ -1,6 +1,6 @@
 # SRAM 8T 2×2
 
-Đồ án CE226 của Nguyen Dong Quan. Mạch SRAM full-custom dùng PDK `reference90RF` (90 nm), tổ chức thành hai từ, mỗi từ hai bit. Thư viện OpenAccess có schematic, symbol và layout của bitcell, mảng 2×2, mạch ngoại vi và macro `ram8t_full`.
+Nguyen Dong Quan thiết kế mạch SRAM này cho đồ án CE226. Đây là mạch full-custom dùng PDK `reference90RF` (90 nm), lưu hai từ, mỗi từ hai bit. Thư viện OpenAccess có các view schematic, symbol và layout cho bitcell, mảng 2×2, mạch ngoại vi và macro `ram8t_full`.
 
 ![Layout ram8t_full](docs/images/ram8t-full-layout.png)
 
@@ -8,11 +8,13 @@
 
 Bitcell gồm latch 6T và hai NMOS dành riêng cho đường đọc. Khi ghi, `WE` và địa chỉ `A` chọn một đường `WWL`. Hai write driver đưa `DIN0` và `DIN1` lên các cặp `WBL/WBLB`.
 
-Trước khi đọc, đặt `PREB = 0` để nạp cả hai `RBL` lên VDD. Đưa `PREB` lên 1 rồi bật `RE` để chọn `RWL` theo địa chỉ. Bit lưu 0 làm `RBL` xả xuống GND. Bit lưu 1 giữ `RBL` ở mức cao. Hai tầng inverter trong `read_sense` đưa mức logic đó ra `DOUT`. Testbench cấp `A`, `WE`, `RE` và `PREB` từ bên ngoài.
+Trước khi đọc, đặt `PREB = 0` để nạp hai đường `RBL` lên VDD. Sau đó đưa `PREB` lên 1 và bật `RE` để chọn `RWL` của hàng cần đọc. Nếu bit đang lưu là 0, nhánh đọc kéo `RBL` xuống GND. Với bit 1, `RBL` giữ mức cao. Hai inverter mắc nối tiếp trong `read_sense` đệm tín hiệu ra `DOUT`. Testbench điều khiển `A`, `WE`, `RE` và `PREB` từ bên ngoài.
 
 ## Mở dự án
 
-Clone repo, đặt bộ PDK đã cài tại `PDK/reference90RF` hoặc sửa đường dẫn trong `lib.defs`. Mở Custom Compiler từ thư mục repo. Trong Library Manager, chọn `ram8t_custom/ram8t_full` để xem mạch hoàn chỉnh hoặc `ram8t_full_test/schematic` để xem chu kỳ ghi và đọc. View `config` của testbench chọn view `starrc` cho DUT. Decoder dùng cell NAND2 ở `lab3/nand2` đi kèm repo.
+Sau khi clone repo, đặt PDK tại `PDK/reference90RF` hoặc trỏ `lib.defs` đến bộ PDK đã cài. Chạy Custom Compiler từ thư mục gốc của repo.
+
+Trong Library Manager, mở `ram8t_custom/ram8t_full` để xem macro hoặc `ram8t_full_test/schematic` để xem testbench ghi và đọc. View `config` của testbench chọn view `starrc` cho DUT. Cổng NAND2 của decoder nằm ở `lab3/nand2`.
 
 | Thư mục | Nội dung |
 | --- | --- |
@@ -30,11 +32,11 @@ Clone repo, đặt bộ PDK đã cài tại `PDK/reference90RF` hoặc sửa đ�
 | Mảng 2×2 | 6.060 × 5.010 | 30.3606 |
 | Macro có ngoại vi | 14.455 × 14.480 | 209.3084 |
 
-Hercules báo DRC sạch và phép so khớp LVS đạt trên bitcell, mảng 2×2 và macro. Báo cáo trích layout của riêng mảng 2×2 có một `ERR_TEXT_OPEN`. StarRC cũng ghi các mục báo chập khi trích RC cho bitcell và macro. [Báo cáo kiểm tra](verification/README.md).
+Bitcell, mảng 2×2 và macro đều qua DRC và so khớp LVS bằng Hercules. Khi trích layout riêng của mảng 2×2, Hercules báo một `ERR_TEXT_OPEN`. StarRC báo chập khi trích RC của bitcell và macro. [Báo cáo kiểm tra](verification/README.md).
 
-Testbench HSPICE chạy chu kỳ 20 ns. Bitcell lần lượt đọc lại 1 và 0 ở 0.8 V, với tải RBL 10 fF. Macro ghi `10` vào hàng 0 và `01` vào hàng 1 ở 1.2 V, rồi đọc lại đúng hai từ với tải 10 fF trên mỗi DOUT. Cả hai testbench có deck schematic và deck trích RC. [Dạng sóng macro sau trích RC](docs/images/ram8t-full-postlayout.png).
+Cả hai testbench HSPICE chạy 20 ns với hai deck, một từ schematic và một từ netlist trích RC. Bitcell ở 0.8 V đọc lại lần lượt 1 và 0, với tải 10 fF trên RBL. Ở 1.2 V, macro đọc lại đúng `10` từ hàng 0 và `01` từ hàng 1 sau khi ghi, với tải 10 fF trên mỗi DOUT. [Dạng sóng macro sau trích RC](docs/images/ram8t-full-postlayout.png).
 
-Ở 1.0 V và 25 °C, phép quét DC cho Hold SNM 307.197 mV và Read SNM 307.199 mV. Số 435.000 mV là cạnh vuông của thùy còn lại khi ép ghi 0. Mạch đo dùng các transistor dựng riêng theo sizing của bitcell và chạy cùng deck transient, với các nút riêng biệt với netlist StarRC. [Thiết lập phép đo](simulation/README.md).
+Phép quét DC ở 1.0 V và 25 °C cho Hold SNM 307.197 mV và Read SNM 307.199 mV. Khi ép ghi 0, cạnh vuông của thùy còn lại là 435.000 mV. Mạch đo dùng transistor có cùng kích thước với transistor trong bitcell. Trong deck transient, mạch đo có bộ nút riêng, tách khỏi netlist StarRC. [Thiết lập phép đo](simulation/README.md).
 
 ## Tài liệu tham khảo
 
