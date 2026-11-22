@@ -1,0 +1,9 @@
+/PDK
+/synopsys_custom/
+/latestResults
+/testSuite.log
+/simulation/reference_models.inc
+/simulation/out/
+*.oaLock
+*.oaLock.*
+*.cdslck*
