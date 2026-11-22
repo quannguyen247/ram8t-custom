@@ -1,28 +1,47 @@
-# Mô phỏng HSPICE
+# HSPICE simulation
 
-Các deck được xuất từ Custom Compiler N-2017.12-SP1-2 và chạy bằng HSPICE N-2017.12-SP2. Đường dẫn `.include` dùng tên file cục bộ để có thể chạy ngoài VM. Các lệnh `.measure tran` lấy mẫu đầu ra tại 7.5 ns và 17.5 ns trong hai cửa sổ đọc.
-
-Từ thư mục gốc của repo, chạy với file model của PDK đang dùng trong lab.
+Run from the repository root with HSPICE on `PATH` and the `reference90RF` PDK
+under `PDK/`. If the PDK is installed elsewhere, use its model path in the
+`ln` command. The decks were exported from Custom Compiler N-2017.12-SP1-2
+and verified with HSPICE N-2017.12-SP2.
 
 ```sh
-cd simulation
-ln -s /path/to/PDK/hspice/reference_models.inc .
-mkdir -p out
-
-for deck in ram8t_*schematic.sp ram8t_*postlayout.sp; do
-    hspice -i "$deck" -o "out/${deck%.sp}" || break
-done
+(
+    set -e
+    cd simulation
+    if [ ! -e reference_models.inc ]; then
+        ln -sfn ../PDK/hspice/reference_models.inc reference_models.inc
+    fi
+    if [ ! -f reference_models.inc ] || [ ! -r reference_models.inc ]; then
+        printf '%s\n' 'Set reference_models.inc to the installed PDK model file.' >&2
+        exit 1
+    fi
+    mkdir -p out
+    for deck in ram8t_*schematic.sp ram8t_*postlayout.sp; do
+        hspice -i "$deck" -o "out/${deck%.sp}"
+    done
+)
 ```
 
-Mở `out/*.lis` để đọc các phép đo, hoặc mở `out/*.tr0` trong WaveView. [Bảng giá trị đọc lại](../verification/hspice/readback.csv).
+Read the `.measure` results in `out/*.lis` or open `out/*.tr0` in WaveView.
+Both benches run for 20 ns at 25 °C and sample outputs at 7.5 ns and 17.5 ns.
 
-| Deck | Nguồn và tải | Dữ liệu đọc |
+| Decks | Supply and load | Expected readback |
 | --- | --- | --- |
-| `ram8t_cell_schematic.sp`, `ram8t_cell_postlayout.sp` | 0.8 V, 10 fF trên RBL | RBL đọc 1 ở 7.5 ns và 0 ở 17.5 ns |
-| `ram8t_full_schematic.sp`, `ram8t_full_postlayout.sp` | 1.2 V, 10 fF trên mỗi DOUT | DOUT0/DOUT1 đọc `10` ở 7.5 ns và `01` ở 17.5 ns |
+| `ram8t_cell_schematic.sp`, `ram8t_cell_postlayout.sp` | 0.8 V, 10 fF on RBL | RBL reads 1, then 0 |
+| `ram8t_full_schematic.sp`, `ram8t_full_postlayout.sp` | 1.2 V, 10 fF per DOUT | DOUT0/DOUT1 read `10`, then `01` |
 
-Các phép transient chạy ở 25 °C trong 20 ns. Hai file `ram8t_cell_test_ic_*.sp` đặt trạng thái ban đầu để xung ghi 1 đầu tiên làm latch đổi trạng thái.
+The bitcell decks load `ram8t_cell_test_ic_sch.sp` or
+`ram8t_cell_test_ic_lay.sp` to put the latch in the opposite state before the
+first write. [Measured readback voltages](../verification/hspice/readback.csv)
 
-## Phép đo SNM
+## SNM
 
-`ram8t_cell_postlayout.sp` gọi thêm `snm_include.sp`. Phần này dựng các mạch DC ở 1.0 V từ transistor có cùng sizing với bitcell. Nút đo DC tách riêng khỏi instance StarRC, nên bảng SNM mô tả mạch DC theo model transistor. `hold_snm_mv` và `read_snm_mv` lấy cạnh vuông theo đường butterfly ở hai cấu hình wordline. `write_snm_mv` đo cạnh vuông của thùy còn lại khi `WWL = 1`, `WBL = 0` và `WBLB = 1`. Giá trị này phụ thuộc quy ước đo. [Kết quả HSPICE](../verification/hspice/bitcell-snm.ms0).
+The bitcell post-layout deck also includes `snm_include.sp`. It runs a separate
+DC sweep at 1.0 V using the bitcell's transistor sizes and independent nodes.
+The SNM measurement circuit has no StarRC parasitic elements.
+
+`hold_snm_mv` and `read_snm_mv` measure the butterfly square for their respective
+wordline settings. `write_snm_mv` measures the square in the remaining lobe
+while forcing a write of 0 with WWL high, WBL low, and WBLB high.
+[HSPICE DC measurements](../verification/hspice/bitcell-snm.ms0)
