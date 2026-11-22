@@ -44,7 +44,7 @@ xis1 rbl net7 inv
 .ends read_sense
 
 ********************************************************************************
-* Library          : lab3
+* Library          : ram8t_custom
 * Cell             : nand2
 * View             : schematic
 * View Search List : hspice hspiceD schematic spice veriloga
