@@ -33,15 +33,31 @@ Both benches run for 20 ns at 25 °C and sample outputs at 7.5 ns and 17.5 ns.
 
 The bitcell decks load `ram8t_cell_test_ic_sch.sp` or
 `ram8t_cell_test_ic_lay.sp` to put the latch in the opposite state before the
-first write. [Measured readback voltages](../verification/hspice/readback.csv)
+first write. See the [measured readback voltages](../verification/hspice/readback.csv).
 
-## SNM
+## SNM in Custom Compiler
 
-The bitcell post-layout deck also includes `snm_include.sp`. It runs a separate
-DC sweep at 1.0 V using the bitcell's transistor sizes and independent nodes.
-The SNM measurement circuit has no StarRC parasitic elements.
+1. Open `ram8t_cell_test/schematic` in the `ram8t_custom` library. In the
+   Schematic Editor, choose **Tools > SAE**. In SAE, use **Setup > Design**
+   to select `ram8t_cell_test/config` and **Setup > Simulator** to select HSPICE.
+2. In **Setup > Model Files**, add the installed
+   `PDK/hspice/reference_models.inc` and `simulation/ram8t_cell_test_ic_lay.sp`.
+   Set `temp` to 25 in the **Variables** pane. Under **Setup > Analyses**,
+   enable `tran` with start 0, step 10 ps and stop 20 ns.
+3. In **Setup > Include Files**, add
+   [`simulation/snm_include.sp`](snm_include.sp) as type **Options**. The file
+   supplies the `.dc` sweep and all three `.measure dc` statements.
+4. Enable **Import Measures** at the bottom of **Outputs** and choose
+   **Simulation > Netlist and Run**. Read `hold_snm_mv`, `read_snm_mv` and
+   `write_snm_mv` in the **Value** column. HSPICE also writes these to
+   `hspice.ms0` in the SAE results directory.
 
-`hold_snm_mv` and `read_snm_mv` measure the butterfly square for their respective
-wordline settings. `write_snm_mv` measures the square in the remaining lobe
-while forcing a write of 0 with WWL high, WBL low, and WBLB high.
-[HSPICE DC measurements](../verification/hspice/bitcell-snm.ms0)
+The shell commands at the top of this page run `ram8t_cell_postlayout.sp`,
+which already includes `snm_include.sp`. Read
+`out/ram8t_cell_postlayout.ms0` or see the
+[saved measurements](../verification/hspice/bitcell-snm.ms0).
+
+The DC sweep runs at 1.0 V in 1 mV steps. Hold and read both keep WWL low
+and WBL, WBLB and RBL high. RWL is low for hold and high for read. The write-0
+measurement uses WWL high, RWL low, WBL low and WBLB high. The reported value
+is the side length of the square in the remaining butterfly lobe.
